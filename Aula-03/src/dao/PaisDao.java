@@ -9,13 +9,14 @@ import model.Pais;
 
 public class PaisDao {
 	public int criar(Pais pais) {
-		String sqlInsert = "INSERT INTO cliente(nome, fone, email) VALUES (?, ?, ?)";
+		String sqlInsert = "INSERT INTO cliente(id, nome, populacao, area) VALUES (?, ?, ?, ?)";
 		// usando o try with resources do Java 7, que fecha o que abriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlInsert);) {
-			stm.setString(1, pais.getNome());
-			stm.setString(2, pais.getFone());
-			stm.setString(3, pais.getEmail());
+			stm.setInt(1, pais.getId());
+			stm.setString(2, pais.getNome());
+			stm.setLong(3, pais.getPopulacao());
+			stm.setDouble(3, pais.getArea());
 			stm.execute();
 			String sqlQuery = "SELECT LAST_INSERT_ID()";
 			try (PreparedStatement stm2 = conn.prepareStatement(sqlQuery);
@@ -33,20 +34,25 @@ public class PaisDao {
 	}
 
 	public void atualizar(Pais pais) {
-		String sqlUpdate = "UPDATE cliente SET nome=?, fone=?, email=? WHERE id=?";
+		String sqlUpdate = "UPDATE cliente SET id=?, nome=?, populacao=? area=?  WHERE id=?";
 		// usando o try with resources do Java 7, que fecha o que abriu
 		try (Connection conn = ConnectionFactory.obtemConexao();
 				PreparedStatement stm = conn.prepareStatement(sqlUpdate);) {
-			stm.setString(1, pais.getNome());
-			stm.setString(2, pais.getFone());
-			stm.setString(3, pais.getEmail());
-			stm.setInt(4, pais.getId());
+			stm.setInt(1, pais.getId());
+			stm.setString(2, pais.getNome());
+			stm.setLong(3, pais.getPopulacao());
+			stm.setDouble(3, pais.getArea());
 			stm.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+/*
+ * private int id;
+	private String nome;
+	private long populacao;
+	private double area;
+*/
 	public void excluir(int id) {
 		String sqlDelete = "DELETE FROM cliente WHERE id = ?";
 		// usando o try with resources do Java 7, que fecha o que abriu
@@ -69,14 +75,13 @@ public class PaisDao {
 			stm.setInt(1, cliente.getId());
 			try (ResultSet rs = stm.executeQuery();) {
 				if (rs.next()) {
-					cliente.setNome(rs.getString("nome"));
-					cliente.setFone(rs.getString("fone"));
-					cliente.setEmail(rs.getString("email"));
+					cliente.setId(rs.getInt("nome"));
+					cliente.setNome(rs.getString("fone"));
+					cliente.setPopulacao(rs.getLong("populacao"));
 				} else {
 					cliente.setId(-1);
 					cliente.setNome(null);
-					cliente.setFone(null);
-					cliente.setEmail(null);
+					
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
